@@ -36,6 +36,7 @@ namespace Microsoft.DotNet.Workloads.Workload
         protected readonly string _userProfileDir;
         protected readonly bool _checkIfManifestExist;
         protected readonly ReleaseVersion _sdkVersion;
+        protected readonly ReleaseVersion _installedSdkVersion;
         protected readonly SdkFeatureBand _sdkFeatureBand;
         protected readonly SdkFeatureBand _installedFeatureBand;
         protected readonly string _fromRollbackDefinition;
@@ -68,6 +69,7 @@ namespace Microsoft.DotNet.Workloads.Workload
             _userProfileDir = userProfileDir ?? CliFolderPathCalculator.DotnetUserProfileFolderPath;
             _checkIfManifestExist = !(_printDownloadLinkOnly);      // don't check for manifest existence when print download link is passed
             _sdkVersion = WorkloadOptionsExtensions.GetValidatedSdkVersion(parseResult.GetValueForOption(InstallingWorkloadCommandParser.VersionOption), version, _dotnetPath, _userProfileDir, _checkIfManifestExist);
+            _installedSdkVersion = WorkloadOptionsExtensions.GetValidatedSdkVersion(null, version, _dotnetPath, _userProfileDir, _checkIfManifestExist);
             _sdkFeatureBand = new SdkFeatureBand(_sdkVersion);
 
             _installedFeatureBand = installedFeatureBand == null ? new SdkFeatureBand(DotnetFiles.VersionFileObject.BuildNumber) : new SdkFeatureBand(installedFeatureBand);
@@ -78,8 +80,8 @@ namespace Microsoft.DotNet.Workloads.Workload
             _packageSourceLocation = string.IsNullOrEmpty(configOption) && (sourceOption == null || !sourceOption.Any()) ? null :
                 new PackageSourceLocation(string.IsNullOrEmpty(configOption) ? null : new FilePath(configOption), sourceFeedOverrides: sourceOption);
                        
-            var sdkWorkloadManifestProvider = new SdkDirectoryWorkloadManifestProvider(_dotnetPath, _installedFeatureBand.ToString(), userProfileDir);
-            _workloadResolver = workloadResolver ?? WorkloadResolver.Create(sdkWorkloadManifestProvider, _dotnetPath, _sdkVersion.ToString(), _userProfileDir);
+            var sdkWorkloadManifestProvider = new SdkDirectoryWorkloadManifestProvider(_dotnetPath, _installedSdkVersion.ToString(), userProfileDir);
+            _workloadResolver = workloadResolver ?? WorkloadResolver.Create(sdkWorkloadManifestProvider, _dotnetPath, _installedSdkVersion.ToString(), _userProfileDir);
 
             _workloadInstallerFromConstructor = workloadInstaller;
             _workloadManifestUpdaterFromConstructor = workloadManifestUpdater;
