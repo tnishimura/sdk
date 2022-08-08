@@ -216,7 +216,6 @@ namespace Microsoft.DotNet.Cli
                 Reporter.Error.WriteLine(CommandContext.IsVerbose()
                     ? exception.ToString().Red().Bold()
                     : exception.Message.Red().Bold());
-                context.ParseResult.ShowHelp();
             }
             else
             {
